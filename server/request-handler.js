@@ -11,8 +11,8 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-
-var exports = module.exports = {};
+var url = require('url');
+const myUrl = new URL('http://parse.RPT.hackreactor.com/chatterbox/classes/messages');
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
@@ -21,7 +21,7 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
-exports.requestHandler = function(request, response) {
+requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -36,6 +36,9 @@ exports.requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
+  request.url = myUrl;
+
+  console.log('pathname: ', myUrl.pathname);
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
@@ -43,7 +46,6 @@ exports.requestHandler = function(request, response) {
 
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
-
 
   // Tell the client we are sending them plain text.
   //
@@ -75,5 +77,6 @@ exports.requestHandler = function(request, response) {
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
 
+module.exports.url = url;
+module.exports.requestHandler = requestHandler;
 
-//module.exports = new requestHandler();
