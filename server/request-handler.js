@@ -11,8 +11,9 @@ this file and include it in basic-server.js so that it actually works.
 *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html.
 
 **************************************************************/
-
-var exports = module.exports = {};
+var url = require('url');
+// const myUrl = new URL('http://127.0.0.1:3000/classes/messages');
+var fs = require('fs');
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
@@ -21,7 +22,26 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
-exports.requestHandler = function(request, response) {
+var messages = [
+  {
+    objectId: 'Dw2VY7QvBm',
+    username: 'gd',
+    roomname: 'Cats Only',
+    text: 'MEOOWWW',
+    createdAt: '2018-10-15T01:22:52.453Z',
+    updatedAt: '2018-10-15T01:22:52.453Z'
+  },
+  {
+    objectId: 'oXQ4Qo0zQD',
+    username: 'a',
+    roomname: 'Lobby',
+    text: 'kljlk',
+    createdAt: '2018-10-14T17:48:46.248Z',
+    updatedAt: '2018-10-14T17:48:46.248Z'
+  }
+];
+
+requestHandler = function(request, response) {
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -31,11 +51,31 @@ exports.requestHandler = function(request, response) {
   // Documentation for both request and response can be found in the HTTP section at
   // http://nodejs.org/documentation/api/
 
+  var urlPath = url.parse(request.url).pathname;
+  var host = url.parse(request.url).host;
+  var hostname = url.parse(request.url).hostname;
+  var protocol = url.parse(request.url).protocol;
+  var searchQuery = url.parse(request.url).search;
+  var username = url.parse(request.url).username;
+  console.log('URL Path: ' + urlPath);
+  console.log('URL Host: ' + host);
+  console.log('URL Host + Port: ' + hostname);
+  console.log('Protocol: ' + protocol);
+  console.log('URL Search Query: ' + searchQuery);
+  console.log('Username: ' + username);
+  console.log('Directory Name: ' + __dirname);
+
+  var filePath = path.join(__dirname + '/bin/messages.json');
+  console.log('File Path: ' + filePath);
+  // console.log('Directory Name: ' + _dirname);
   // Do some basic logging.
   //
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
+  //request.url = myUrl;
+
+  //console.log('pathname: ', pathname);
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
@@ -44,16 +84,50 @@ exports.requestHandler = function(request, response) {
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
 
-
   // Tell the client we are sending them plain text.
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
+  headers['Content-Type'] = 'application/json';
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
+  response.write('Hello World!');
+
+  // fs.readFile('../client/index.html', (err, data) => {
+  //   if (err) { throw err; }
+  //   console.log('Data: ' + data);
+  //   response.writeHead(200, headers);
+  // });
+
+  if (request.url !== '/classes/messages') {
+    statusCode = 404;
+    response.end();
+  }
+  if (request.method === 'GET') {
+    var data = messages;
+    data = JSON.stringify({results: data});
+    response.writeHead(statusCode, headers);
+    console.log('data : ', data);
+    response.end(data);
+  }
+  if (request.method === 'POST') {
+    request.on('data', function(chunk) {
+      console.log('chunk: ', chunk);
+      var data = JSON.parse(chunk);
+      console.log('data: ', data);
+      statusCode = 201;
+      response.writeHead(statusCode, headers);
+      messages.push(data);
+      console.log('our messages: ', messages);
+    });
+  }
+
+  // if (request.method === 'OPTIONS') {
+  //   response.end('hello world');
+  // }
+
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -62,7 +136,7 @@ exports.requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, World!');
+  response.end();
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -75,5 +149,8 @@ exports.requestHandler = function(request, response) {
 // Another way to get around this restriction is to serve you chat
 // client from this domain by setting up static file serving.
 
+module.exports.url = url;
+module.exports.requestHandler = requestHandler;
 
-//module.exports = new requestHandler();
+exports.requestHandler = requestHandler;
+exports.url = url;
