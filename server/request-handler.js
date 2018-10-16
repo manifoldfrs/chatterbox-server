@@ -12,7 +12,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 var url = require('url');
-const myUrl = new URL('http://parse.RPT.hackreactor.com/chatterbox/classes/messages');
+const myUrl = new URL('http://127.0.0.1:3000/chatterbox/classes/messages');
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
