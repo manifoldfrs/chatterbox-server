@@ -12,7 +12,8 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 var url = require('url');
-const myUrl = new URL('http://127.0.0.1:3000/chatterbox/classes/messages');
+// const myUrl = new URL('http://127.0.0.1:3000/classes/messages');
+var fs = require('fs');
 
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
@@ -20,6 +21,25 @@ var defaultCorsHeaders = {
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
+
+var messages = [
+  {
+    objectId: 'Dw2VY7QvBm',
+    username: 'gd',
+    roomname: 'Cats Only',
+    text: 'MEOOWWW',
+    createdAt: '2018-10-15T01:22:52.453Z',
+    updatedAt: '2018-10-15T01:22:52.453Z'
+  },
+  {
+    objectId: 'oXQ4Qo0zQD',
+    username: 'a',
+    roomname: 'Lobby',
+    text: 'kljlk',
+    createdAt: '2018-10-14T17:48:46.248Z',
+    updatedAt: '2018-10-14T17:48:46.248Z'
+  }
+];
 
 requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -36,9 +56,9 @@ requestHandler = function(request, response) {
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
   // console.logs in your code.
-  request.url = myUrl;
+  //request.url = myUrl;
 
-  console.log('pathname: ', myUrl.pathname);
+  //console.log('pathname: ', pathname);
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
@@ -51,11 +71,39 @@ requestHandler = function(request, response) {
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
+  headers['Content-Type'] = 'application/json';
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
+
+  if (request.url !== '/classes/messages') {
+    statusCode = 404;
+    response.end();
+  }
+  if (request.method === 'GET') {
+    var data = messages;
+    data = JSON.stringify({results: data});
+    response.writeHead(statusCode, headers);
+    console.log('data : ', data);
+    response.end(data);
+  }
+  if (request.method === 'POST') {
+    request.on('data', function(chunk) {
+      console.log('chunk: ', chunk);
+      var data = JSON.parse(chunk);
+      console.log('data: ', data);
+      statusCode = 201;
+      response.writeHead(statusCode, headers);
+      messages.push(data);
+      console.log('our messages: ', messages);
+    });
+  }
+
+  // if (request.method === 'OPTIONS') {
+  //   response.end('hello world');
+  // }
+
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
