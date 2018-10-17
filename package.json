@@ -21,9 +21,9 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-register": "^6.26.0",
     "chai": "^3.5.0",
-    "eslint-config-hackreactor": "git://github.com/reactorcore/eslint-config-hackreactor.git",
-    "mocha": "^2.5.3",
-    "request": "^2.88.0"
+    "eslint-config-hackreactor": "git://github.com/reactorcore/eslint-config-hackreactor",
+    "mocha": "^5.2.0",
+    "request": "^2.70.0"
   },
   "babel": {
     "presets": [
