@@ -2,6 +2,14 @@ var handler = require('../request-handler');
 var expect = require('chai').expect;
 var stubs = require('./Stubs');
 
+var defaultCorsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10, // Seconds.
+  'bob': 'Hello I am Bob your useless header'
+};
+
 describe('Node Server Request Listener Function', function() {
   it('Should answer GET requests for /classes/messages with a 200 status code', function() {
     // This is a fake server request. Normally, the server would provide this,
@@ -101,6 +109,37 @@ describe('Node Server Request Listener Function', function() {
 
     expect(res._responseCode).to.equal(404);
     expect(res._ended).to.equal(true);
+  });
+
+  it('Should PUT to /classes/messages', function() {
+    var stubMsg = {
+      username: 'Jonah',
+      text: 'What the hell!'
+    };
+    var req = new stubs.request('/classes/messages', 'PUT', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    // Expect 201 Created response status
+    expect(res._responseCode).to.equal(204);
+
+    // Testing for a newline isn't a valid test
+    // TODO: Replace with with a valid test
+    // expect(res._data).to.equal(JSON.stringify('\n'));
+    expect(res._ended).to.equal(true);
+  });
+
+  it('Should have access-control-allow-origin in the headers', function() {
+    // This is a fake server request. Normally, the server would provide this,
+    // but we want to test our function's behavior totally independent of the server code
+    var req = new stubs.request('/classes/messages', 'GET');
+    var res = new stubs.response();
+    headers = defaultCorsHeaders;
+
+    handler.requestHandler(req, res);
+    res.writeHead(200, headers);
+    expect(res._headers['access-control-allow-origin']).to.equal('*');
   });
 
 });
