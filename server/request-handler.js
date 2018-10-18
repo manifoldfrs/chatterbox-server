@@ -43,43 +43,6 @@ var messages = {
 };
 
 requestHandler = function(request, response) {
-<<<<<<< HEAD
-  // Request and Response come from node's http module.
-  //
-  // They include information about both the incoming request, such as
-  // headers and URL, and about the outgoing response, such as its status
-  // and content.
-  //
-  // Documentation for both request and response can be found in the HTTP section at
-  // http://nodejs.org/documentation/api/
-
-  var urlPath = url.parse(request.url).pathname;
-  var host = url.parse(request.url).host;
-  var hostname = url.parse(request.url).hostname;
-  var protocol = url.parse(request.url).protocol;
-  var searchQuery = url.parse(request.url).search;
-  var username = url.parse(request.url).username;
-  console.log('URL Path: ' + urlPath);
-  console.log('URL Host: ' + host);
-  console.log('URL Host + Port: ' + hostname);
-  console.log('Protocol: ' + protocol);
-  console.log('URL Search Query: ' + searchQuery);
-  console.log('Username: ' + username);
-  console.log('Directory Name: ' + __dirname);
-
-  var filePath = path.join(__dirname + '/bin/messages.json');
-  console.log('File Path: ' + filePath);
-  // console.log('Directory Name: ' + _dirname);
-  // Do some basic logging.
-  //
-  // Adding more logging to your server can be an easy way to get passive
-  // debugging help, but you should always be careful about leaving stray
-  // console.logs in your code.
-  //request.url = myUrl;
-
-  //console.log('pathname: ', pathname);
-=======
->>>>>>> de87bab1b0d196d54007cf4f72c9071e6d249ed7
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
   var statusCode;
   var headers = defaultCorsHeaders;
