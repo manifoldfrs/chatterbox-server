@@ -43,6 +43,7 @@ var messages = {
 };
 
 requestHandler = function(request, response) {
+  //console.log('our url = ', request.url, request.method);
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
