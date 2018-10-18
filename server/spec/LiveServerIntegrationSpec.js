@@ -73,5 +73,34 @@ describe('server', function() {
     });
   });
 
+  it('should accept PUT requests to /classes/messages', function(done) {
+    var requestParams = {method: 'PUT',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jonah',
+        text: 'Do anything!'}
+    };
+
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(204);
+      done();
+    });
+  });
+
+  it('should have bob in the headers', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      console.log('INFO : ', response.headers);
+      expect(response.headers['bob']).to.equal('Hello I am Bob your useless header');
+      done();
+    });
+  });
+
+  it('should have access-control-allow-methods in the headers', function(done) {
+    request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+      console.log('INFO : ', response.headers);
+      expect(response.headers['access-control-allow-methods']).to.equal('GET, POST, PUT, DELETE, OPTIONS');
+      done();
+    });
+  });
 
 });

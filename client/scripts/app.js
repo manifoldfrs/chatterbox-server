@@ -60,7 +60,7 @@ var app = {
     $.ajax({
       url: app.server,
       type: 'GET',
-      data: { /*order: '-createdAt' */ },
+      data: { /* order: '-createdAt' */ },
       success: function(data) {
         // Don't bother if we have nothing to work with
         if (!data.results || !data.results.length) { return; }

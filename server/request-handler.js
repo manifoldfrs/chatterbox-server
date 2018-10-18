@@ -19,12 +19,12 @@ var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10 // Seconds.
+  'access-control-max-age': 10, // Seconds.
+  'bob': 'Hello I am Bob your useless header'
 };
 
 var messages = {
-  results:
-  [ /* {
+  results: [{
     objectId: 'Dw2VY7QvBm',
     username: 'gd',
     roomname: 'Cats Only',
@@ -39,8 +39,8 @@ var messages = {
     text: 'kljlk',
     createdAt: '2018-10-14T17:48:46.248Z',
     updatedAt: '2018-10-14T17:48:46.248Z'
-  } */
-  ]};
+  }]
+};
 
 requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -73,46 +73,54 @@ requestHandler = function(request, response) {
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
   headers['Content-Type'] = 'application/json';
-
+  //console.log('our headers: ', headers);
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  // response.writeHead(statusCode, headers);
 
-  if (request.url !== '/classes/messages') {
+  if (request.method === 'GET' && request.url === '/classes/messages') {
+    var data = messages;
+    data = JSON.stringify(data);
+    statusCode = 200;
+    response.writeHead(statusCode, headers);
+    response.end(data);
+  } else if (request.method === 'OPTIONS' && request.url === '/classes/messages') {
+    statusCode = 200;
+    response.writeHead(statusCode, headers);
+  } else if (request.method === 'POST' && request.url === '/classes/messages') {
+    request.on('data', function(chunk) {
+      console.log('post chunk: ', chunk);
+      var data = JSON.parse(chunk);
+      console.log('post data here: ', data);
+      // console.log('blah blah blah: ', messages.results);
+      messages.results.unshift(data);
+      console.log('our posted messages ------>>> : ', messages);
+    });
+    var data = messages;
+    data = JSON.stringify(data);
+    console.log('Return data is here!', data);
+    statusCode = 201;
+    response.writeHead(statusCode, headers);
+    response.end(data);
+  } else if (request.method === 'PUT' && request.url === '/classes/messages') {
+    request.on('data', function(chunk) {
+      //console.log('post chunk: ', chunk);
+      var data = JSON.parse(chunk);
+      //console.log('post data here: ', data);
+      // console.log('blah blah blah: ', messages.results);
+      messages.results.unshift(data);
+      //console.log('our posted messages ------>>> : ', messages);
+    });
+    var data = messages;
+    data = JSON.stringify(data);
+    console.log('Return data is here!', data);
+    statusCode = 204;
+    response.writeHead(statusCode, headers);
+    response.end(data);
+  } else {
     statusCode = 404;
     response.writeHead(statusCode, headers);
     response.end();
   }
-  if (request.method === 'GET') {
-    var data = messages;
-    data = JSON.stringify(data);
-    statusCode = 200;
-    response.writeHead(statusCode, headers);
-    // console.log('data : ', data);
-    response.end(data);
-  } else if (request.method === 'OPTIONS') {
-    statusCode = 200;
-    response.writeHead(statusCode, headers);
-  } else if (request.method === 'POST') {
-    request.on('data', function(chunk) {
-      // console.log('post chunk: ', chunk);
-      var data = JSON.parse(chunk);
-      console.log('post data here: ', data);
-      messages.results.push(data);
-      console.log('our messages: ', messages);
-    });
-    var data = messages;
-    data = JSON.stringify(data);
-    console.log('Data is here!', data);
-    statusCode = 201;
-    response.writeHead(statusCode, headers);
-    response.end(data);
-  }
-  // else {
-  //   statusCode = 404;
-  //   response.writeHead(statusCode, headers);
-  //   response.end();
-  // }
 
 
   // Make sure to always call response.end() - Node may not send
